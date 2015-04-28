@@ -2,7 +2,15 @@
 # -*- coding: utf-8 -*-
 #Andrew Kaplan Twitter Bot final project Social Software 4/28/15
 
-import tweepy, time, sys, random, json, collections
+'''
+This bot selects a random location where there are trending topics,
+chooses the top ten trending topics from that location,
+then tweets about how it never would want to talk about those topics,
+then follows all of it's followers back because it's lonely
+
+'''
+
+import tweepy, time, sys, random, collections
 import config as cfg #import config file with authentication information
 
 #----------------------AUTHENTICATION------------------------------------
@@ -39,30 +47,38 @@ if  True: # api.verify_credentials():
 	        rv[key] = value
 	    return rv
 
-	trend = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
-	for item in trend: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
-		trenDic = {}
+	trendingPlaces = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
+	trenDic = {}
+	for item in trendingPlaces: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
 		trenDic[(item['name'])] = item['woeid']
 		#print trenDic
 
-	#topTen is a list of dictionaries!
-	topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid) from dictionary.
+	#topTen is a list containing dictionaries!
+	topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid)/place from dictionary(trenDic).
+	
 	try:
-		topTenList = []
 		for item in topTen: # iterate through items in topTen(list)
 			for key in item:# iterate through keys in the dictionary within topTen
 				if key == 'trends':
+					topTenList = []
 					topTenList = item.get(key) #fill list with values from key trends
-		print topTenList
+		#print topTenList # list containing dictionaries of top ten trending for specific location
+		topTenDic = {}
+		for item in topTenList:
+			topTenDic[(item['name'])] = item['url']
+		print topTenDic
 	except KeyError:
 		print "Uhh oh! Key Error"
+
+
+
+#-------------------OTHER IDEAS BELOW---------------------------------
 
 	#follow every follower (A CRY FOR FRIENDSHIP!)
 	# for follower in tweepy.Cursor(api.followers).items():
 	#     follower.follow()
 
-	#api.trends_place(id[, exclude])
-	#if api.exists_friendship(notTooPopular, user_b) # true if user a follows user b
+	#if api.exists_friendship(notTooPopular, user_b) # checks friendship, true if user a follows user b
 	# api.followers_ids(id/screen_name/user_id) #returns id of followers 
 
 	#     #time.sleep(120)#Tweet every 2 minutes
