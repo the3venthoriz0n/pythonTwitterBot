@@ -45,14 +45,17 @@ if  True: # api.verify_credentials():
 		trenDic[(item['name'])] = item['woeid']
 		#print trenDic
 
-	topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid) from dictionary
+	#topTen is a list of dictionaries!
+	topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid) from dictionary.
 	try:
-		print "TYPE TEST: ", type(topTen)
 		topTenList = []
-		topTenList.append(topTen.get('trends')) #append value for trends key in topTenList
+		for item in topTen: # iterate through items in topTen(list)
+			for key in item:# iterate through keys in the dictionary within topTen
+				if key == 'trends':
+					topTenList = item.get(key) #fill list with values from key trends
 		print topTenList
 	except KeyError:
-		print "Key Error"
+		print "Uhh oh! Key Error"
 
 	#follow every follower (A CRY FOR FRIENDSHIP!)
 	# for follower in tweepy.Cursor(api.followers).items():
