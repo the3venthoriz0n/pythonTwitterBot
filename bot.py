@@ -65,13 +65,13 @@ if  True: # api.verify_credentials():
 	filename.close()#close file reader
 
 #----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
-
-	myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
-	print "\n", "MY FOLLOWERS: ", myFollowers
-	if len(myFollowers) > 0: #check that followers exist
-		for follower in myFollowers: #iterate through followers
-			api.create_friendship(follower)
-			print "I just followed: ", follower
+	def followAll():
+		myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
+		print "\n", "MY FOLLOWERS: ", myFollowers
+		if len(myFollowers) > 0: #check that followers exist
+			for follower in myFollowers: #iterate through followers
+				api.create_friendship(follower)
+				print "I just followed: ", follower
 
 #--------------------------------------START TRENDS CODE--------------------------------------------------
 	for line in fileLines: #loop this code every loopInterval
@@ -100,6 +100,7 @@ if  True: # api.verify_credentials():
 			print "Uhh oh! Key Error"
 		randomTrend = random.choice(topTenDic.keys())
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
+		followAll()#check/follow followers
 		time.sleep(15 * 60)# in seconds, run code/tweet every 15 minutes
 
 	# #old status update
