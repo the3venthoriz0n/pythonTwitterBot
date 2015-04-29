@@ -101,7 +101,7 @@ if  True: # api.verify_credentials():
 		randomTrend = random.choice(topTenDic.keys())
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
 		followAll()#check/follow followers
-		time.sleep(15 * 60)# in seconds, run code/tweet every 15 minutes
+		time.sleep(25 * 60)# in seconds, run code/tweet every 25 minutes
 
 	# #old status update
 	# statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
