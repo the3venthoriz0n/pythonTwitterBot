@@ -13,10 +13,14 @@ then follows all of it's followers back because it's lonely
 import tweepy, time, sys, random, collections
 import config as cfg #import config file with authentication information
 
+argfile = str(sys.argv[1]) # pass text file to command line argument
+
 #----------------------AUTHENTICATION------------------------------------
 auth = tweepy.OAuthHandler(cfg.CONSUMER_KEY, cfg.CONSUMER_SECRET)
 auth.set_access_token(cfg.ACCESS_KEY, cfg.ACCESS_SECRET)
 api = tweepy.API(auth)
+myUID = 2912975613 # my user identification number
+
 
 if  True: # api.verify_credentials():
 	print "Your credentials are O.K."
@@ -46,48 +50,85 @@ if  True: # api.verify_credentials():
 	            value = _decode_dict(value)
 	        rv[key] = value
 	    return rv
+#-------------------------START TRENDS CODE--------------------------------------------------------------------
+	while True: #loop this code every loopInterval
+		trendingPlaces = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
+		trenDic = {}
+		for item in trendingPlaces: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
+			trenDic[(item['name'])] = item['woeid']
+			#print "trenDic: ", trenDic
 
-	trendingPlaces = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
-	trenDic = {}
-	for item in trendingPlaces: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
-		trenDic[(item['name'])] = item['woeid']
-		#print trenDic
+		#topTen is a list containing dictionaries as elements!
+		topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid)/place from dictionary(trenDic)
+		try:
+			for item in topTen: # iterate through items in topTen(list)
+				for key in item:# iterate through keys in the dictionary within topTen
+					if key == 'trends':
+						topTenList = []
+						topTenList = item.get(key) #fill list with values from key trends
+			#print "topTenList: ", topTenList # list containing dictionaries of top ten trending for specific location
+			topTenDic = {}
+			for item in topTenList:
+				topTenDic[(item['name'])] = item['url']
+			#print "topTenDIc: ", topTenDic
+		except KeyError:
+			print "Uhh oh! Key Error"
+		randomTrend = random.choice(topTenDic.keys())
 
-	#topTen is a list containing dictionaries!
-	topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid)/place from dictionary(trenDic).
-	
-	try:
-		for item in topTen: # iterate through items in topTen(list)
-			for key in item:# iterate through keys in the dictionary within topTen
-				if key == 'trends':
-					topTenList = []
-					topTenList = item.get(key) #fill list with values from key trends
-		#print topTenList # list containing dictionaries of top ten trending for specific location
-		topTenDic = {}
-		for item in topTenList:
-			topTenDic[(item['name'])] = item['url']
-		print topTenDic
-	except KeyError:
-		print "Uhh oh! Key Error"
+		def updateStatus(trend, place, text):
+			#updtate twitter status with passed in values
+			status = text1 + "is SO much better than" + trend + "in" + place
+			api.update_status(status = status)
+			print "Status updated!"
 
 
+		filename = open(argfile,'r')
+		f = filename.readlines()
+		filename.close()
+		 
+		for line in f:
+			updtateStatus(randomTrend, randomPlace, line)
+		time.sleep(10 * 60)# in seconds, Tweet every 10 minutes
 
-#-------------------OTHER IDEAS BELOW---------------------------------
+#-----------------------------------END TRENDS CODE-----------------------------------------
 
-	#follow every follower (A CRY FOR FRIENDSHIP!)
-	# for follower in tweepy.Cursor(api.followers).items():
-	#     follower.follow()
 
-	#if api.exists_friendship(notTooPopular, user_b) # checks friendship, true if user a follows user b
-	# api.followers_ids(id/screen_name/user_id) #returns id of followers 
+#----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
 
-	#     #time.sleep(120)#Tweet every 2 minutes
-	#     time.sleep(900)#Tweet every 15 minutes (15*60)
+	myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
+	print "\n", "MY FOLLOWERS: ", myFollowers
+	if len(myFollowers) > 0: #check that followers exist
+		for follower in myFollowers: #iterate through followers
+			api.create_friendship(follower)
+			print "I just followed: ", follower
+
+	statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
+	api.update_status(status = statusUpdate)
+	print "Status updated!"
+	updateStatus(randomTrend, randomPlace, poem, saying)
+	time.sleep(10 * 60)# in seconds, Tweet every 10 minutes
 else:
 	print "Your credentials are incorrect! Check the config file"
 
 
+	#-------------------OTHER IDEAS BELOW---------------------------------
 
+			# #another method, follow every follower 
+			# for follower in tweepy.Cursor(api.followers).items():
+			#     follower.follow()
+			#friends = api.show_friendship(source_id = myUID, target_id = follower)	# get friendship info
+			# print "Friends: ",friends 
+
+			#create dictionary of friend objects (not very useful since cant iterate over friend object)
+			# counter = 0
+			# for item in friends:
+			# 	fDic = {}
+			# 	fDic[counter] = item #create key value pairs, key is counter, value is item
+			# 	counter += 1
+			#print "\n", "FDIC TEST: ", fDic
+
+		#     #time.sleep(120)#Tweet every 2 minutes
+		#     time.sleep(900)#Tweet every 15 minutes (15*60)
 
 
 
