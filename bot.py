@@ -5,7 +5,7 @@
 '''
 This bot selects a random location where there are trending topics,
 chooses the top ten trending topics from that location,
-then tweets about how it never would want to talk about those topics,
+then tweets lines from the raven by Edgar Allan Poe, comparing them to the trending topics,
 then follows all of it's followers back because it's lonely
 
 '''
@@ -50,8 +50,31 @@ if  True: # api.verify_credentials():
 	            value = _decode_dict(value)
 	        rv[key] = value
 	    return rv
-#-------------------------START TRENDS CODE--------------------------------------------------------------------
-	while True: #loop this code every loopInterval
+
+	def updateStatus(trend, place, text):
+		#updtate twitter status with passed in values
+		trend = trend.replace(" ", "") # remove all spaces
+		trend = trend.replace("#", "") # remove hashtag if it exists, so I can place my own
+		place = place.replace(" ", "") # remove all spaces from string
+		status = text + "...SO much better than " + " #" + trend + " in" + " #" + place
+		api.update_status(status = status)
+		print "\n", "Status updated!"
+
+	filename = open(argfile,'r')#open file, with argument r for read
+	fileLines = filename.readlines()# read random line into variable f
+	filename.close()#close file reader
+
+#----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
+
+	myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
+	print "\n", "MY FOLLOWERS: ", myFollowers
+	if len(myFollowers) > 0: #check that followers exist
+		for follower in myFollowers: #iterate through followers
+			api.create_friendship(follower)
+			print "I just followed: ", follower
+
+#--------------------------------------START TRENDS CODE--------------------------------------------------
+	for line in fileLines: #loop this code every loopInterval
 		trendingPlaces = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
 		trendPlaceDic = {}
 		for item in trendingPlaces: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
@@ -61,7 +84,7 @@ if  True: # api.verify_credentials():
 		#topTen is a list containing dictionaries as elements!
 		randomPlaceName = random.choice(trendPlaceDic.keys())#random key from trendPlaceDic
 		randomWoeid = trendPlaceDic.get(randomPlaceName) # choose value coresponding to key in trending places dictionary
-		topTen = _decode_list(api.trends_place(randomWoeid)) #use value(woeid)/place from dictionary(trenPlaceDic)
+		topTen = _decode_list(api.trends_place(randomWoeid)) #get top tend trends from value(woeid)/place from dictionary(trenPlaceDic)
 		try:
 			for item in topTen: # iterate through items in topTen(list)
 				for key in item:# iterate through keys in the dictionary within topTen
@@ -76,42 +99,27 @@ if  True: # api.verify_credentials():
 		except KeyError:
 			print "Uhh oh! Key Error"
 		randomTrend = random.choice(topTenDic.keys())
+		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
+		time.sleep(15 * 60)# in seconds, run code/tweet every 15 minutes
 
-		def updateStatus(trend, place, text):
-			#updtate twitter status with passed in values
-			status = text + "is SO much better than" + trend + "in" + place
-			api.update_status(status = status)
-			print "Status updated!"
-
-
-		filename = open(argfile,'r')
-		f = filename.readlines()
-		filename.close()
-		 
-		for line in f:
-			updtateStatus(randomTrend, randomPlaceName, line)
-
-
-
-#----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
-	while True:
-		myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
-		print "\n", "MY FOLLOWERS: ", myFollowers
-		if len(myFollowers) > 0: #check that followers exist
-			for follower in myFollowers: #iterate through followers
-				api.create_friendship(follower)
-				print "I just followed: ", follower
-		time.sleep(20 * 60)# in seconds, check followers every 20 minutes
-
-
-	statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
-	api.update_status(status = statusUpdate)
-	print "Status updated!"	
+	# #old status update
+	# statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
+	# api.update_status(status = statusUpdate)
+	# print "Status updated!"	
 else:
 	print "Your credentials are incorrect! Check the config file"
 
 
 	#-------------------OTHER IDEAS BELOW---------------------------------
+
+			# to read line differently? Doesnt work
+			# i = 0 
+			# while i in range(0, len(fileLines)):
+			# 	line = fileLines[i]
+			# 	updateStatus(randomTrend, randomPlaceName, line)#update status with line from f
+			# 	i += 1
+			# 	if i >= len(fileLines): #restart reading file once reached end
+			# 		i = 0
 
 			# #another method, follow every follower 
 			# for follower in tweepy.Cursor(api.followers).items():
