@@ -53,13 +53,15 @@ if  True: # api.verify_credentials():
 #-------------------------START TRENDS CODE--------------------------------------------------------------------
 	while True: #loop this code every loopInterval
 		trendingPlaces = _decode_list(api.trends_available()) # convert unicode reply to normal utf-8 list, assign to variable trend
-		trenDic = {}
+		trendPlaceDic = {}
 		for item in trendingPlaces: #add name and yahoo world id for each item in trends list to dictionary of key value pairs
-			trenDic[(item['name'])] = item['woeid']
-			#print "trenDic: ", trenDic
+			trendPlaceDic[(item['name'])] = item['woeid']
+			#print "trendPlaceDic: ", trendPlaceDic
 
 		#topTen is a list containing dictionaries as elements!
-		topTen = _decode_list(api.trends_place((random.choice(trenDic.values())))) #choose random value(woeid)/place from dictionary(trenDic)
+		randomPlaceName = random.choice(trendPlaceDic.keys())#random key from trendPlaceDic
+		randomWoeid = trendPlaceDic.get(randomPlaceName) # choose value coresponding to key in trending places dictionary
+		topTen = _decode_list(api.trends_place(randomWoeid)) #use value(woeid)/place from dictionary(trenPlaceDic)
 		try:
 			for item in topTen: # iterate through items in topTen(list)
 				for key in item:# iterate through keys in the dictionary within topTen
@@ -77,7 +79,7 @@ if  True: # api.verify_credentials():
 
 		def updateStatus(trend, place, text):
 			#updtate twitter status with passed in values
-			status = text1 + "is SO much better than" + trend + "in" + place
+			status = text + "is SO much better than" + trend + "in" + place
 			api.update_status(status = status)
 			print "Status updated!"
 
@@ -87,26 +89,24 @@ if  True: # api.verify_credentials():
 		filename.close()
 		 
 		for line in f:
-			updtateStatus(randomTrend, randomPlace, line)
-		time.sleep(10 * 60)# in seconds, Tweet every 10 minutes
+			updtateStatus(randomTrend, randomPlaceName, line)
 
-#-----------------------------------END TRENDS CODE-----------------------------------------
 
 
 #----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
+	while True:
+		myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
+		print "\n", "MY FOLLOWERS: ", myFollowers
+		if len(myFollowers) > 0: #check that followers exist
+			for follower in myFollowers: #iterate through followers
+				api.create_friendship(follower)
+				print "I just followed: ", follower
+		time.sleep(20 * 60)# in seconds, check followers every 20 minutes
 
-	myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
-	print "\n", "MY FOLLOWERS: ", myFollowers
-	if len(myFollowers) > 0: #check that followers exist
-		for follower in myFollowers: #iterate through followers
-			api.create_friendship(follower)
-			print "I just followed: ", follower
 
 	statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
 	api.update_status(status = statusUpdate)
-	print "Status updated!"
-	updateStatus(randomTrend, randomPlace, poem, saying)
-	time.sleep(10 * 60)# in seconds, Tweet every 10 minutes
+	print "Status updated!"	
 else:
 	print "Your credentials are incorrect! Check the config file"
 
