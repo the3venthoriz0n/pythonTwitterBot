@@ -103,7 +103,7 @@ if api.verify_credentials():
 		randomTrend = random.choice(topTenDic.keys())
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
 		followAll()#check/follow followers
-		time.sleep((random.randint(30,45)) * 60)# in seconds, run code/tweet at random interval between 30 and 45 minutes
+		time.sleep((random.randint(60,120)) * 60)# in seconds, run code/tweet at random interval between 60-120 minutes
 else:
 	print "Your credentials are incorrect! Check the config file"
 
