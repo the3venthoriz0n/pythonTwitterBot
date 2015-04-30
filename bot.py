@@ -58,11 +58,13 @@ if api.verify_credentials():
 		place = place.replace(" ", "") # remove all spaces from string
 		status = text + "...SO much better than " + " #" + trend + " in" + " #" + place
 		api.update_status(status = status)
-		print "\n", "Status updated!"
+		print "\n", "Status updated!" , status # I think this printed status is different from actual status posted
 
 	filename = open(argfile,'r')#open file, with argument r for read
-	fileLines = filename.readlines()# read random line into variable f
+	fileLines = filename.readlines()# line into variable fileLines
+	random.shuffle(fileLines) #shuffle lines (so it doesnt start reading from the beginning everytime)
 	filename.close()#close file reader
+	
 
 #----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
 	def followAll():
@@ -102,42 +104,10 @@ if api.verify_credentials():
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
 		followAll()#check/follow followers
 		time.sleep(30 * 60)# in seconds, run code/tweet every 30 minutes
-
-	# #old status update
-	# statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
-	# api.update_status(status = statusUpdate)
-	# print "Status updated!"	
 else:
 	print "Your credentials are incorrect! Check the config file"
 
 
-	#-------------------OTHER IDEAS BELOW---------------------------------
-
-			# to read line differently? Doesnt work
-			# i = 0 
-			# while i in range(0, len(fileLines)):
-			# 	line = fileLines[i]
-			# 	updateStatus(randomTrend, randomPlaceName, line)#update status with line from f
-			# 	i += 1
-			# 	if i >= len(fileLines): #restart reading file once reached end
-			# 		i = 0
-
-			# #another method, follow every follower 
-			# for follower in tweepy.Cursor(api.followers).items():
-			#     follower.follow()
-			#friends = api.show_friendship(source_id = myUID, target_id = follower)	# get friendship info
-			# print "Friends: ",friends 
-
-			#create dictionary of friend objects (not very useful since cant iterate over friend object)
-			# counter = 0
-			# for item in friends:
-			# 	fDic = {}
-			# 	fDic[counter] = item #create key value pairs, key is counter, value is item
-			# 	counter += 1
-			#print "\n", "FDIC TEST: ", fDic
-
-		#     #time.sleep(120)#Tweet every 2 minutes
-		#     time.sleep(900)#Tweet every 15 minutes (15*60)
 
 
 
