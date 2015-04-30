@@ -22,7 +22,7 @@ api = tweepy.API(auth)
 myUID = 2912975613 # my user identification number
 
 
-if  True: # api.verify_credentials():
+if api.verify_credentials():
 	print "Your credentials are O.K."
 
 	def _decode_list(data): #functions for decoding the unicode json object returned by the api.trends_available() method
@@ -101,7 +101,7 @@ if  True: # api.verify_credentials():
 		randomTrend = random.choice(topTenDic.keys())
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
 		followAll()#check/follow followers
-		time.sleep(25 * 60)# in seconds, run code/tweet every 25 minutes
+		time.sleep(30 * 60)# in seconds, run code/tweet every 30 minutes
 
 	# #old status update
 	# statusUpdate = "I wouldn't be caught dead talking about " + randomTrend + " are you kidding me?!"		
