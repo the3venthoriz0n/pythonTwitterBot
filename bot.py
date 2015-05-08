@@ -68,12 +68,16 @@ if api.verify_credentials():
 
 #----------------------FOLLOW MY FOLLOWERS (a cry for friendship)-------------------------------------
 	def followAll():
-		myFollowers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
-		print "\n", "MY FOLLOWERS: ", myFollowers
-		if len(myFollowers) > 0: #check that followers exist
-			for follower in myFollowers: #iterate through followers
+		followers = api.followers_ids(myUID) #returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
+		following = api.friends_ids(myUID)#returns list of integers(uid's) of users following specified uid(me)
+		print "\n", "MY FOLLOWERS: ", followers
+		#if I wanted to maintain a good following/followers ratio Id have to unfriend people
+		if (len(followers) > 0) and (len(following) < len(followers)): #check that followers exist and that I'm not following more people than are following me 
+			for follower in followers: #iterate through followers
 				api.create_friendship(follower)
 				print "I just followed: ", follower
+
+
 
 #--------------------------------------START TRENDS CODE--------------------------------------------------
 	for line in fileLines: #loop this code every loopInterval
@@ -103,7 +107,7 @@ if api.verify_credentials():
 		randomTrend = random.choice(topTenDic.keys())
 		updateStatus(randomTrend, randomPlaceName, line) #update status with line from textfile
 		followAll()#check/follow followers
-		time.sleep((random.randint(60,120)) * 60)# in seconds, run code/tweet at random interval between 60-120 minutes
+		time.sleep((random.randint(240,480)) * 60)# in seconds, run code/tweet at random interval between 240-480 minutes 4-8 hours
 else:
 	print "Your credentials are incorrect! Check the config file"
 
