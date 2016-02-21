@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Andrew Kaplan Twitter Bot final project Social Software 4/28/15
+# Andrew Kaplan
+# Twitter Bot final project Social Software 4/28/15
 
 
 # This bot selects a random location where there are trending topics,
