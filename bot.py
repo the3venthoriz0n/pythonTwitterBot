@@ -24,7 +24,7 @@ api = tweepy.API(auth)
 myUID = 2912975613  # my user identification number
 
 if api.verify_credentials():
-    print "Your credentials are O.K."
+    print("Your credentials are O.K.")
 
 
     def _decode_list(data):
@@ -64,7 +64,7 @@ def update_status(trend, place, text):
     place = place.replace(" ", "")  # remove all spaces from string
     status = text + "...SO much better than " + " #" + trend + " in" + " #" + place
     api.update_status(status=status)
-    print "\n", "Status updated!", status  # I think this printed status is different from actual status posted
+    print("\n", "Status updated!", status)  # I think this printed status is different from actual status posted
 
 
 filename = open(argFile, 'r')  # open file, with argument r for read
@@ -78,13 +78,13 @@ def follow_all():
     followers = api.followers_ids(
         myUID)  # returns id of followers, by default of authenticated account. my info: 2912975613 (the3venthoriz0n)
     following = api.friends_ids(myUID)  # returns list of integers(uid's) of users following specified uid(me)
-    print "\n", "MY FOLLOWERS: ", followers
+    print("\n", "MY FOLLOWERS: ", followers)
     # if I wanted to maintain a good following/followers ratio Id have to unfriend people
     if (len(followers) > 0) and (len(following) < len(
             followers)):  # check that followers exist and that I'm not following more people than are following me
         for follower in followers:  # iterate through followers
             api.create_friendship(follower)
-            print "I just followed: ", follower
+            print("I just followed: ", follower)
 
 
 # --------------------------------------START TRENDS CODE--------------------------------------------------
@@ -116,11 +116,11 @@ for line in fileLines:  # loop this code every loopInterval
             topTenDic[(item['name'])] = item['url']
             # print "topTenDIc: ", topTenDic
     except KeyError:
-        print "Uhh oh! Key Error"
+        print("Uhh oh! Key Error")
     randomTrend = random.choice(topTenDic.keys())
     update_status(randomTrend, randomPlaceName, line)  # update status with line from textfile
     follow_all()  # check/follow followers
     time.sleep((random.randint(240,
                                480)) * 60)  # in seconds, run code/tweet at random interval between 240-480 minutes 4-8 hours
 else:
-    print "Your credentials are incorrect! Check the config file"
+    print("Your credentials are incorrect! Check the config file")
